@@ -1,31 +1,61 @@
 # day 7 
-alph = ("A B C D E F G H I J K L M N O P Q R S T U V W X Y Z").split()
-print(alph)
+def getExecutable(graph): #graph has to be reversed graph
+    ex_set = set()
+    for k, v in graph.items():
+        for letter in v:
+            if graph.get(letter) == None or graph.get(letter) == []:
+                ex_set.add(letter)
+
+    ex = []
+    for item in ex_set:
+        ex.append(item)
+    return ex
+
+def extendExecutable(list1, list2):
+    merged = set()
+    mer_list = []
+    for item in list1:
+        merged.add(item)
+    for item in list2:
+        merged.add(item)
+    for item in merged:
+        mer_list.append(item)
+    mer_list.sort()
+    return mer_list
+
+def getReversed(graph): #reversed graph where keys are the nodes that are pointed towards
+    rev = {}
+    for k, v in graph.items():
+        for letter in v:
+            if rev.get(letter) != None:
+                rev[letter].append(k)
+            else:
+                rev[letter] = [k]
+    return rev
 
 def start():
-    
-    graph_fromto = {}
-    graph_tofrom = {}
-    
-    for letter in alph:
-        graph_fromto[letter] = []
-        graph_tofrom[letter] = []
+    graph = {}
     with open('./day7.txt') as f:
         for line in f:
             tmp_line = line.split()
-            graph_from = tmp_line[1]
-            graph_to = tmp_line[7]
-            if graph_fromto.get(graph_from) != None:
-                graph_fromto[graph_from].append(graph_to)
+            if graph.get(tmp_line[1]) != None:
+                graph[tmp_line[1]].append(tmp_line[7])
             else:
-                graph_fromto[graph_from] = [graph_to]
+                graph[tmp_line[1]] = [tmp_line[7]]
 
-            if graph_tofrom.get(graph_to) != None:
-                graph_tofrom[graph_to].append(graph_from)
-            else:
-                graph_tofrom[graph_to] = [graph_from]
+    executable = []
+    executed = []
+    while(len(graph)>0):
+        # print("graph", graph)
+        rev_graph = getReversed(graph)
+        tmp = getExecutable(rev_graph)
+        executable = extendExecutable(executable, tmp)
+        executed.append(executable[0])
+        del graph[executable[0]]
+        executable = executable[1:]
 
-    print(graph_fromto)
-    print(graph_tofrom)
-
+    # print("graph", graph)
+    print("need to add the N")
+    print("executed", executed)
+    print("joined", ''.join(executed))
 start()
